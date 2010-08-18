@@ -1,0 +1,7 @@
+# gcc
+*.o
+
+#folders
+BackUp
+formulae
+waves
