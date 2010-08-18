@@ -11,6 +11,10 @@
 
 #include "datatypes.h"
 #include "util_math.h"
+#include <lal/LALStdlib.h>
+#include <lal/LALInspiral.h>
+#include <lal/GeneratePPNInspiral.h>
+#include <lal/GenerateInspiral.h>
 
 extern double FITTING_PI;
 
@@ -50,5 +54,7 @@ typedef struct {
 	double phi;		///< angle for \f$f_p\f$, \f$f_\times\f$
 	double pol;		///< polariosation angle
 } Params;
+
+Statistic chi_Statistic(SimInspiralTable *params, PPNParamStruc *pparams, Params par);
 
 #endif // FITTING_H

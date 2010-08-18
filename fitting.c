@@ -98,31 +98,34 @@ Statistic chi_Statistic(SimInspiralTable *params,
 		par.theta * sin(par.phi) * cos(par.pol);*/
 
 	size_t s1, s2, i, j;
+	double a1, a2, phi, shift;
 	for (s1 = 0; s1 < stat.size; s1++) {
 		par.spin[0].chi = actual[0];
 		for (s2 = 0; s2 < stat.size; s2++) {
 			par.spin[1].chi = actual[1];
 			for (i = 0; i < 2; i++) {
 				angle_To_Component(&par.spin[i]);
-				params.spin1x = par.spin[0].x;
-				params.spin1y = par.spin[0].y;
-				params.spin1z = par.spin[0].z;
-				params.spin2x = par.spin[1].x;
-				params.spin2y = par.spin[1].y;
-				params.spin2z = par.spin[1].z;
+				params->spin1x = par.spin[0].x;
+				params->spin1y = par.spin[0].y;
+				params->spin1z = par.spin[0].z;
+				params->spin2x = par.spin[1].x;
+				params->spin2y = par.spin[1].y;
+				params->spin2z = par.spin[1].z;
 				LALGenerateInspiral(&status, &wave[i], params, pparams);
 				if (status.statusCode) {
 					fprintf( stderr, "LALSQTPNWaveformTest: error generating waveform\n" );
-					return status.statusCode;
+					free(stat.stat);
+					stat.size = 0;
+					return stat;
 				}
-				signal[i] = mallocArray(wave[i].f->data->length);
-				for (j = 0; j < signal[i]->length; j++) {
+				mallocArray(&signal[i], wave[i].f->data->length);
+				for (j = 0; j < signal[i].length; j++) {
 					a1  = wave[i].a->data->data[2*j];
 					a2  = wave[i].a->data->data[2*j+1];
-					phi     = wave[i].phi->data->data[j] - wave[k].phi->data->data[0];
+					phi     = wave[i].phi->data->data[j] - wave[i].phi->data->data[0];
 					shift   = wave[i].shift->data->data[j];
-					signal[i].data[j] = fp * (a1*cos(shift)*cos(phi) - a2*sin(shift)*sin(phi)) +
-										fc * (a1*sin(shift)*cos(phi) + a2*cos(shift)*sin(phi));
+					signal[i].data[j] = par.fp * (a1*cos(shift)*cos(phi) - a2*sin(shift)*sin(phi)) +
+										par.fc * (a1*sin(shift)*cos(phi) + a2*cos(shift)*sin(phi));
 				}
 			}
 			stat.stat[s1 + stat.size * s2] = calculate_Phase_Shift(signal);

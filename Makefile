@@ -23,12 +23,17 @@ CFLAGS+=`pkg-config --cflags lalinspiral`
 LIB=-lm `pkg-config --libs lalinspiral`
 
 all: main
+	echo "XXXXXXXXXXXXXXXXXXXXXXX"
+	echo "${CFLAGS}"
+	echo "XXXXXXXXXXXXXXXXXXXXXXX"
+	echo "${LIB}"
+	echo "XXXXXXXXXXXXXXXXXXXXXXX"
 
 main: main.c ${OBJ}
-	${CC} -o main ${CFLAGS} main.c
+	${CC} -o main ${CFLAGS} main.c ${OBJ} ${LIB}
 
-fitting.o: fitting.c fitting.h
-	${CC} -c ${CFLAGS} fitting.c ${LIB}
+fitting.o: fitting.c fitting.h util_math.o datatypes.o
+	${CC} -c ${CFLAGS} fitting.c ${LIB} util_math.o datatypes.o
 
 datatypes.o: datatypes.c datatypes.h
 	${CC} -c ${CFLAGS} datatypes.c
@@ -41,19 +46,13 @@ clean:
 	@echo ''
 
 cleanrun:
-	rm -rf lal own overlap lal.out own.out
+	rm -rf main
 	@echo ''
 
 cleanall:
 	make clean
 	make cleanrun
 	@echo ''
-
-run: own lal
-	@echo "`head -n 1 input.data` own.out `tail -n 1 input.data`"
-	./own `head -n 1 input.data` own.out `tail -n 1 input.data`
-	@echo "`head -n 1 input.data` lal.out"
-	./lal `head -n 1 input.data` lal.out
 
 help :
 	@echo 'all       : makes everything'

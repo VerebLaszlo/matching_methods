@@ -9,6 +9,7 @@
 #define UTIL_MATH_H
 
 #include <stdlib.h>
+#include <time.h>
 #include <math.h>
 
 /**		Returns the square of the argument.

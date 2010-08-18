@@ -1,5 +1,10 @@
 # gcc
 *.o
+main
+
+#hidden files
+.*
+!.gitignore
 
 #folders
 BackUp

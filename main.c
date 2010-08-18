@@ -6,6 +6,7 @@
  */
 
 #include "fitting.h"
+#include "util_math.h"
 
 int main(int argc, char* argv[]) {
 	SimInspiralTable injParams;
@@ -16,12 +17,12 @@ int main(int argc, char* argv[]) {
 		printf(
 				"Correct parameter order: m1 m2 S1x S1y S1z S2x S2y S2z incl f_lower f_final distance dt PNorder1 PNorder2 Spin1 Spin2\n");
 		return (1);
-	}	
+	}
+
+    const char *filename = argv[15];
+	char PNString [50];
 	sprintf(PNString, "SpinQuadTaylor%s%s", argv[14], argv[16]);
 	filename = argv[15];
-	memset(&status, 0, sizeof(LALStatus));
-	memset(&wave[0], 0, sizeof(CoherentGW));
-	memset(&wave[1], 0, sizeof(CoherentGW));
 	memset(&injParams, 0, sizeof(SimInspiralTable));
 	memset(&ppnParams, 0, sizeof(PPNParamStruc));
 	//	setting the parameters
@@ -49,8 +50,8 @@ int main(int argc, char* argv[]) {
 	par.spin[0].phi = randnk(0, 2. * FITTING_PI);
 	par.spin[1].phi = randnk(0, 2. * FITTING_PI);
 
-	par.spin[0].mass = atof(argv[1]);
-	par.spin[1].mass = atof(argv[2]);
+	par.spin[0].m = atof(argv[1]);
+	par.spin[1].m = atof(argv[2]);
 	par.lower = 0.;
 	par.upper = 1.;
 	par.step = 0.01;
@@ -59,15 +60,15 @@ int main(int argc, char* argv[]) {
 		par.theta * sin(par.phi) * sin(par.pol);
 	par.fc = 0.5 * (1. + par.theta * par.theta) * cos(par.phi) * sin(par.pol) -
 		par.theta * sin(par.phi) * cos(par.pol);
-	Statistic chi_stat = chi_Statistic(params, pparams, par);
+	Statistic chi_stat = chi_Statistic(&injParams, &ppnParams, par);
 	FILE *file = fopen(filename, "w");
 	size_t i, j;
 	for (i = 0; i < chi_stat.size; i++) {
 		for (j = 0; j < chi_stat.size; j++) {
-			fprintf(file, "%15.10lg %15.10lg %15.10lg\n", par.lower + (double)i * par.step, par.lower + (double)j * par.step, chi_stat.stat[i + j * stat.size]);
+			fprintf(file, "%15.10lg %15.10lg %15.10lg\n", par.lower + (double)i * par.step, par.lower + (double)j * par.step, chi_stat.stat[i + j * chi_stat.size]);
 		}
 	}
-	fclose(filename);
+	fclose(file);
 
 	return 0;
 }
