@@ -25,6 +25,9 @@ main: main.c ${OBJ}
 fitting.o: fitting.c fitting.h util_math.o datatypes.o
 	${CC} -c ${CFLAGS} fitting.c ${LDFLAGS}
 
+%.o: %.c %.h
+	${CC} -c ${CFLAGS} $<
+
 clean:
 	rm -rf *.o *.out *.b
 	@echo ''
