@@ -26,7 +26,7 @@ main: main.c ${OBJ}
 	${CC} -o main ${CFLAGS} main.c ${OBJ} ${LDFLAGS}
 
 fitting.o: fitting.c fitting.h util_math.o datatypes.o
-	${CC} -c ${CFLAGS} fitting.c util_math.o datatypes.o ${LDFLAGS}
+	${CC} -c ${CFLAGS} fitting.c ${LDFLAGS}
 
 clean:
 	rm -rf *.o *.out *.b
