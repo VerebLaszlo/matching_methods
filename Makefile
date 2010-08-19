@@ -1,7 +1,5 @@
-#!/usr/bin/colormake
-############################################################################
-
 CC=gcc
+
 include config.mk
 
 BUILD_TYPE=debug# debug, normal, prod
@@ -19,27 +17,16 @@ endif
 endif
 
 OBJ=util_math.o datatypes.o fitting.o
-CFLAGS+=`pkg-config --cflags lalinspiral`
-LIB=-lm `pkg-config --libs lalinspiral`
+CFLAGS+=$(shell pkg-config --cflags lalinspiral)
+LDFLAGS+=$(shell pkg-config --libs lalinspiral)
 
 all: main
-	echo "XXXXXXXXXXXXXXXXXXXXXXX"
-	echo "${CFLAGS}"
-	echo "XXXXXXXXXXXXXXXXXXXXXXX"
-	echo "${LIB}"
-	echo "XXXXXXXXXXXXXXXXXXXXXXX"
 
 main: main.c ${OBJ}
-	${CC} -o main ${CFLAGS} main.c ${OBJ} ${LIB}
+	${CC} -o main ${CFLAGS} main.c ${OBJ} ${LDFLAGS}
 
 fitting.o: fitting.c fitting.h util_math.o datatypes.o
-	${CC} -c ${CFLAGS} fitting.c ${LIB} util_math.o datatypes.o
-
-datatypes.o: datatypes.c datatypes.h
-	${CC} -c ${CFLAGS} datatypes.c
-
-util_math.o: util_math.c util_math.h
-	${CC} -c ${CFLAGS} util_math.c -lm
+	${CC} -c ${CFLAGS} fitting.c util_math.o datatypes.o ${LDFLAGS}
 
 clean:
 	rm -rf *.o *.out *.b
@@ -56,13 +43,10 @@ cleanall:
 
 help :
 	@echo 'all       : makes everything'
-	@echo 'lal       : makes just the LALSTPNWaveform.c part'
-	@echo 'own       : makes the whole own code'
 	@echo 'clean     : deletes the object files'
 	@echo 'cleanrun : deletes the exe files'
 	@echo 'cleanall : invokes the "clean" and "cleanrun" commands'
-	@echo 'run       : runs the two programs'
 	@echo 'help      : prints this message'
 	@echo ''
 
-.PHONY: all clean cleanall cleanrun run help
+.PHONY: all clean cleanall cleanrun help
