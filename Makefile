@@ -4,15 +4,12 @@ include config.mk
 
 BUILD_TYPE=debug# debug, normal, prod
 ifeq (${BUILD_TYPE},debug)
-	CFLAGS+=-Wall -Wextra -Wswitch-default -Wswitch-enum -g3
-	DEBUG=1
+	CFLAGS+=-Wall -Wextra -Wswitch-default -Wswitch-enum -g3 -DDEBUG
 else
 ifeq (${BUILD_TYPE},prod)
 	CFLAGS+=-O3
-	DEBUG=0
 else
 	CFLAGS+=-Wall -Wextra -Wswitch-default -Wswitch-enum -g3 -ggdb3 -time
-	DEBUG=0
 endif
 endif
 
