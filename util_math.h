@@ -31,7 +31,7 @@ double rand1(void);
  * @return the random number.
  */
 double randn(double n);
-#define RANDN(A) (A) * (double)rand() / ((double)RAND_MAX + 1.)
+#define RANDN(A) (A) * RAND1
 
 /**		Returns a random number between [lower, upper).
  * Use srand() beforhand.
@@ -40,7 +40,7 @@ double randn(double n);
  * @return the random number.
  */
 double randnk(double lower, double upper);
-#define RANDNK(A,B) ((A) + (B)) * (double)rand() / ((double)RAND_MAX + 1.) - (A);
+#define RANDNK(A,B) ((A) + (B)) * RAND1 - (A);
 
 /**		Returns the smallest power of two no less than num.
  * @param[in]	num	: 

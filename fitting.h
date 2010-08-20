@@ -55,6 +55,12 @@ typedef struct {
 	double pol;		///< polariosation angle
 } Params;
 
+/**		Returns the chi statistic of the waveform with given parameters.
+ * @param[in]	params	: inspiral parameters of the waveform
+ * @param[in]	pparams	: ppn parameters of the waveform
+ * @param[in]	par		: other parameters
+ * @return	the statistic
+ */
 Statistic chi_Statistic(SimInspiralTable *params, PPNParamStruc *pparams, Params par);
 
 #endif // FITTING_H

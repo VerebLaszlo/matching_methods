@@ -44,28 +44,26 @@ Array *reallocArray(Array *array, size_t length);
 void freeArray(Array *array);
 
 #ifdef DEBUG
+#define PRINTMSG(MSG) fprintf(stderr,MSG)
+#else
+#define PRINTMSG(MSG) {}
+#endif
+
 #define MallocArray(A, L)															\
-	fprintf(stderr, "Allocating memory for the "#A" array with %d length.\n");		\
+	PRINTMSG("Allocating memory for the "#A" array with %d length.\n");		\
 	mallocArray(A, L);																\
 	//fprintf(stderr, "The "#A" array with %d length could not be allocated!\n", L);
 	
 #define CallocArray(A, L)																			\
-	fprintf(stderr, "Allocating memory for the "#A" array with %d length, and setting to zero.\n");	\
+	PRINTMSG("Allocating memory for the "#A" array with %d length, and setting to zero.\n");	\
 	callocArray(A, L);
 
 #define ReallocArray(A, L);															\
-	fprintf(stderr, "Reallocating memory for the "#A" array with %d length.\n");	\
+	PRINTMSG("Reallocating memory for the "#A" array with %d length.\n");	\
 	reallocArray(A, L);
 
 #define FreeArray(A);												\
-	fprintf(stderr, "Deallocating memory of the "#A" array.\n");	\
+	PRINTMSG("Deallocating memory of the "#A" array.\n");	\
 	freeArray(A);
-
-#else 
-#define MallocArray(A, L) mallocArray(A, L);
-#define CallocArray(A, L) callocArray(A, L);
-#define ReallocArray(A, L) reallocArray(A, L);
-#define FreeArray(A) freeArray(A);
-#endif
 
 #endif // DATATYPES_H

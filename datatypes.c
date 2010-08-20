@@ -6,6 +6,7 @@
  */
 
 #include "datatypes.h"
+#include <stdio.h>
 
 Array *mallocArray(Array *array, size_t length) {
 	array->length = length;

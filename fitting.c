@@ -20,13 +20,12 @@ double calculate_Phase_Shift(Array signal[]) {
 		{0, 0, 0, 0},
 		{0, 0, 0, 0}
 	};
-	double pi;
 
+#define LOCALMAX (signal[i].data[j-1] < signal[i].data[j] && signal[i].data[j+1] < signal[i].data[j])
 	// find the first two amplitudes
 	for (i = 0; i < 2; i++) {
 		for (j = 1; j < signal[i].length - 1; j++) {
-			if (signal[i].data[j - 1] < signal[i].data[j] &&
-					signal[i].data[j + 1] < signal[i].data[j]) {
+			if (LOCALMAX) {
 				if (!index[i][2]) {
 					index[i][2] = j;
 					index[i][3]++;
@@ -43,8 +42,7 @@ double calculate_Phase_Shift(Array signal[]) {
 	while (index[i][3] == index[i][3]) {
 		for (i = 0; i < 2; i++) {
 			for (; j < signal[i].length - 1; j++) {
-				if (signal[i].data[j - 1] < signal[i].data[j] &&
-						signal[i].data[j + 1] < signal[i].data[j]) {
+				if (LOCALMAX) {
 					index[i][0] = index[i][1];
 					index[i][1] = index[i][2];
 					index[i][2] = j;
@@ -56,17 +54,13 @@ double calculate_Phase_Shift(Array signal[]) {
 	}
 
 	// calculate the phase shift
+#define PHASESHIFT(a,b) FITTING_PI*fabs(index[0][a]-index[1][a-b]) / ((double)(index[0][a]-index[0][a-1] + index[1][a-b]-index[1][a-b-1] )/2.)
 	if (index[0][3] == index[1][3]) {
-		pi = (double)(index[0][2] - index[0][1] + index[1][2] - index[1][1]) / 2.;
-		return FITTING_PI * fabs(index[0][2] - index[1][2]) / pi;
-	} else {
-		if (index[0][3] < index[1][3]) {
-			pi = (double)(index[0][2] - index[0][1] + index[1][1] - index[1][0]) / 2.;
-			return FITTING_PI * fabs(index[0][2] - index[1][1]) / pi;
-		} else {
-			pi = (double)(index[0][1] - index[0][0] + index[1][2] - index[1][1]) / 2.;
-			return FITTING_PI * fabs(index[0][1] - index[1][2]) / pi;
-		}
+        return PHASESHIFT(2,0);
+	} else if (index[0][3] < index[1][3]) {
+        return PHASESHIFT(2,1);
+    } else {
+        return PHASESHIFT(1,-1);
 	}
 }
 

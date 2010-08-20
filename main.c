@@ -11,15 +11,15 @@
 int main(int argc, char* argv[]) {
 	SimInspiralTable injParams;
 	PPNParamStruc ppnParams;
-	if (argc != 18) {
+	if (argc != 17) {
 		printf(
-				"                         1  2  3   4   5   6   7   8   9    10	     11      12       13 14       15    16       17\n");
+				"                         1  2  3   4   5   6   7   8   9    10	     11      12       13 14       15    16\n");
 		printf(
-				"Correct parameter order: m1 m2 S1x S1y S1z S2x S2y S2z incl f_lower f_final distance dt PNorder1 Spin1 PNorder2 Spin2\n");
+				"Correct parameter order: m1 m2 S1x S1y S1z S2x S2y S2z incl f_lower f_final distance dt PNorder1 Spin1 filename\n");
 		return (1);
 	}
 
-    const char *filename = argv[15];
+    const char *filename = argv[16];
 	char PNString [50];
 	sprintf(PNString, "SpinQuadTaylor%s%s", argv[14], argv[15]);
 	memset(&injParams, 0, sizeof(SimInspiralTable));
@@ -33,8 +33,8 @@ int main(int argc, char* argv[]) {
 	injParams.spin2x = atof(argv[6]);
 	injParams.spin2y = atof(argv[7]);
 	injParams.spin2z = atof(argv[8]);*/
-	injParams.qmParameter[0] = 1.;//atof(argv[9]);
-	injParams.qmParameter[1] = 1.;//atof(argv[10]);
+	injParams.qmParameter1 = 1.;//atof(argv[9]);
+	injParams.qmParameter2 = 1.;//atof(argv[10]);
 	injParams.inclination = atof(argv[9]);
 	injParams.f_lower = atof(argv[10]);
 	injParams.f_final = atof(argv[11]);
