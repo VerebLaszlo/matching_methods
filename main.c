@@ -13,16 +13,15 @@ int main(int argc, char* argv[]) {
 	PPNParamStruc ppnParams;
 	if (argc != 18) {
 		printf(
-				"                         1  2  3   4   5   6   7   8   9    10	     11      12       13 14       15       16    17\n");
+				"                         1  2  3   4   5   6   7   8   9    10	     11      12       13 14       15    16       17\n");
 		printf(
-				"Correct parameter order: m1 m2 S1x S1y S1z S2x S2y S2z incl f_lower f_final distance dt PNorder1 PNorder2 Spin1 Spin2\n");
+				"Correct parameter order: m1 m2 S1x S1y S1z S2x S2y S2z incl f_lower f_final distance dt PNorder1 Spin1 PNorder2 Spin2\n");
 		return (1);
 	}
 
     const char *filename = argv[15];
 	char PNString [50];
-	sprintf(PNString, "SpinQuadTaylor%s%s", argv[14], argv[16]);
-	filename = argv[15];
+	sprintf(PNString, "SpinQuadTaylor%s%s", argv[14], argv[15]);
 	memset(&injParams, 0, sizeof(SimInspiralTable));
 	memset(&ppnParams, 0, sizeof(PPNParamStruc));
 	//	setting the parameters
@@ -42,6 +41,8 @@ int main(int argc, char* argv[]) {
 	injParams.distance = atof(argv[12]);
 	ppnParams.deltaT = atof(argv[13]);
 	injParams.polarization = 0;
+	LALSnprintf(injParams.waveform, LIGOMETA_WAVEFORM_MAX * sizeof(CHAR),
+			PNString);
 
 	Params par;
 	srand(time(NULL));

@@ -22,12 +22,7 @@ OBJ=util_math.o datatypes.o fitting.o
 CFLAGS+=`pkg-config --cflags lalinspiral`
 LIB=-lm `pkg-config --libs lalinspiral`
 
-all: main
-	echo "XXXXXXXXXXXXXXXXXXXXXXX"
-	echo "${CFLAGS}"
-	echo "XXXXXXXXXXXXXXXXXXXXXXX"
-	echo "${LIB}"
-	echo "XXXXXXXXXXXXXXXXXXXXXXX"
+all: main wave
 
 main: main.c ${OBJ}
 	${CC} -o main ${CFLAGS} main.c ${OBJ} ${LIB}
@@ -41,12 +36,18 @@ datatypes.o: datatypes.c datatypes.h
 util_math.o: util_math.c util_math.h
 	${CC} -c ${CFLAGS} util_math.c -lm
 
+run: wave
+	./wave `head -n 1 input.data` own.out `tail -n 1 input.data`
+
+wave: LALSQTPNWaveformTest.c
+	${CC} -o SQT ${CFLAGS} LALSQTPNWaveformTest.c ${LIB}
+
 clean:
 	rm -rf *.o *.out *.b
 	@echo ''
 
 cleanrun:
-	rm -rf main
+	rm -rf main wave
 	@echo ''
 
 cleanall:
