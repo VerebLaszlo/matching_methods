@@ -16,6 +16,7 @@
 #include <lal/GeneratePPNInspiral.h>
 #include <lal/GenerateInspiral.h>
 
+extern double dt;
 extern double FITTING_PI;
 
 /**		Calculates the phase shift between the two signals.

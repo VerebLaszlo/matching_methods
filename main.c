@@ -53,9 +53,10 @@ int main(int argc, char* argv[]) {
 
 	par.spin[0].m = atof(argv[1]);
 	par.spin[1].m = atof(argv[2]);
-	par.lower = 0.;
+	dt = atof(argv[13]);
+	par.lower = 0.9;
 	par.upper = 1.;
-	par.step = 0.01;
+	par.step = 0.1;
 	par.theta = par.phi = par.pol = 0.;
 	par.fp = 0.5 * (1. + par.theta * par.theta) * cos(par.phi) * cos(par.pol) -
 		par.theta * sin(par.phi) * sin(par.pol);
@@ -70,6 +71,6 @@ int main(int argc, char* argv[]) {
 		}
 	}
 	fclose(file);
-
+	puts("Done!");
 	return 0;
 }
