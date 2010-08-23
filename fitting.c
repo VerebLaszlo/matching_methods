@@ -72,10 +72,13 @@ double calculate_Phase_Shift(Array signal[]) {
 	// calculate the phase shift
 #define PHASESHIFT(a,b) FITTING_PI*fabs(index[0][a]-index[1][a-b]) / ((double)(index[0][a]-index[0][a-1] + index[1][a-b]-index[1][a-b-1] )/2.)
 	if (index[0][3] == index[1][3]) {
+        // (02-12) / (02-01+12-11)
         return PHASESHIFT(2,0);
 	} else if (index[0][3] < index[1][3]) {
+        // (02-11) / (02-01+11-10)
         return PHASESHIFT(2,1);
     } else {
+        // (01-12) / (01-00+12-11)
         return PHASESHIFT(1,-1);
 	}
 }
