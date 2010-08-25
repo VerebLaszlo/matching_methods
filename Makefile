@@ -25,6 +25,9 @@ main: main.c ${OBJ}
 	${CC} -o main ${CFLAGS} main.c ${OBJ} ${LDFLAGS}
 	@echo ''
 
+simple-test: simple-test.c ${OBJ}
+	${CC} -o simple-test ${CFLAGS} simple-test.c ${OBJ} ${LDFLAGS}
+
 fitting.o: fitting.c fitting.h util_math.o datatypes.o
 	${CC} -c ${CFLAGS} fitting.c ${LDFLAGS}
 	@echo ''
