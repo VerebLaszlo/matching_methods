@@ -17,7 +17,7 @@ double FITTING_PI = M_PI;
 double calculate_Phase_Shift(Array signal[]) {
 	// variable definitions and initialisations
 	static const size_t diff = 1;
-	size_t i, j;
+	size_t i, j, n;
     /// index[i][0] - number of maximums
     /// index[i][1] - the index of last but one maximum
     /// index[i][2] - the index of last maximum
@@ -51,10 +51,18 @@ double calculate_Phase_Shift(Array signal[]) {
 
     // if the number of maximums are non-equal
     if (index[0][0] != index[1][0]) {
-        /// TODO
-        /// we should decide, what we want to do in this case
+        // which signal has more maximum
+        i = index[0][0]<index[1][0]; 
+        n = index[i][0]-index[!i][0];
+        j = index[i][2];
+        while (n>0) {
+            for (;LOCALMAX;j--);
+            index[i][2] = index[i][1];
+            index[i][1] = j;
+            n--;
+        }
     }
-
+    
     // in previous section we guarantee that the one of the index are between
     // the other indexes.
     if (index[0][2]<index[1][2] && index[0][2]>index[1][1]) {
