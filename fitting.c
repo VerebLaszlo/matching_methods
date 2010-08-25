@@ -18,12 +18,53 @@ double calculate_Phase_Shift(Array signal[]) {
 	// variable definitions and initialisations
 	static const size_t diff = 1;
 	size_t i, j;
+    /// index[i][0] - number of maximums
+    /// index[i][1] - the index of last but one maximum
+    /// index[i][2] - the index of last maximum
 	size_t index[][4] = {
 		{0, 0, 0, 0},
 		{0, 0, 0, 0}
 	};
 
 #define LOCALMAX (signal[i].data[j-diff] < signal[i].data[j] && signal[i].data[j+diff] < signal[i].data[j])
+    for (i=0; i<2; i++) {
+        for (j=1; j<signal[i].length-1; j++) {
+            if (LOCALMAX) {
+                index[i][1] = index[i][2];
+                index[i][2] = j,
+                index[i][0]++;
+#ifdef DEBUG
+                printf("MAX %d\n", j);
+#endif
+            }
+        }
+#ifdef DEBUG
+        printf("\n");
+#endif
+    }
+    printf("Number of maximums: %d, %d\n",index[0][0],index[1][0]);
+    // if some of index is 0
+    if (!index[0][0]*index[1][0]) {
+        printf("Error - no maximum!\n");
+        return -1;
+    }
+
+    // if the number of maximums are non-equal
+    if (index[0][0] != index[1][0]) {
+        /// TODO
+        /// we should decide, what we want to do in this case
+    }
+
+    // in previous section we guarantee that the one of the index are between
+    // the other indexes.
+    if (index[0][2]<index[1][2] && index[0][2]>index[1][1]) {
+        i=0;
+    } else {
+        i=1;
+    }
+    return FITTING_PI/2 * (index[i][2]-index[!i][1]) / (index[!i][2]-index[!i][1]);
+
+/*
 	// find the first two amplitudes
 	for (i = 0; i < 2; i++) {
 		for (j = 1; j < signal[i].length - 1; j++) {
@@ -43,25 +84,25 @@ double calculate_Phase_Shift(Array signal[]) {
 		printf("%d: %lg, %d: %lg, %d: %lg %d\n", index[i][0], dt * index[i][0],
 				index[i][1], dt * index[i][1], index[i][2], dt * index[i][2],
 				index[i][3]);
-	}
+	}*/
 	// find the last two amplitudes
 	j++;
 	//size_t temp = index[0][1];
 //	while (index[0][3] == index[1][3]) {
-		for (; j < signal[i].length - 1; j++) {
+/*		for (; j < signal[i].length - 1; j++) {
 			for (i = 0; i < 2; i++) {
 				if (LOCALMAX) {
 					index[i][0] = index[i][1];
 					index[i][1] = index[i][2];
 					index[i][2] = j;
-					index[i][3]++;
+					index[i][3]++; */
 					/*short xxxx;
 					for (xxxx = 0; xxxx < 2; xxxx++) {
 						printf("%d %d:: %d: %lg, %d: %lg, %d: %lg %d\n",signal[i].length, j, index[xxxx][0], dt * index[xxxx][0],
 								index[xxxx][1], dt * index[xxxx][1], index[xxxx][2], dt * index[xxxx][2],
 								index[xxxx][3]);
 					}*/
-				}
+/*				}
 			}
 			if (index[0][3] != index[1][3]) {
 				break;
@@ -80,7 +121,7 @@ double calculate_Phase_Shift(Array signal[]) {
     } else {
         // (01-12) / (01-00+12-11)
         return PHASESHIFT(1,-1);
-	}
+	}*/
 }
 
 void angle_To_Component(Spins *spin) {
