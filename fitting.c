@@ -34,7 +34,7 @@ double calculate_Phase_Shift(Array signal[]) {
                 index[i][2] = j,
                 index[i][0]++;
 #ifdef DEBUG
-                printf("MAX %d\n", j);
+                printf("MAX%d %d. %d\n", i, index[i][0], j);
 #endif
             }
         }
@@ -53,16 +53,23 @@ double calculate_Phase_Shift(Array signal[]) {
     if (index[0][0] != index[1][0]) {
         // which signal has more maximum
         i = index[0][0]<index[1][0]; 
-        n = index[i][0]-index[!i][0];
+        n = index[i][0]-index[!i][0]+2;
         j = index[i][2];
         while (n>0) {
-            for (;LOCALMAX;j--);
+            while (!(LOCALMAX)) {
+                j--;
+            }
             index[i][2] = index[i][1];
             index[i][1] = j;
-            n--;
+            j--; n--;
         }
     }
+
+    for (i=0; i<2; i++) {
+        printf("%d. %d %d\n", i, index[i][1], index[i][2]);
+    }
     
+    /// TODO
     // in previous section we guarantee that the one of the index are between
     // the other indexes.
     if (index[0][2]<index[1][2] && index[0][2]>index[1][1]) {
@@ -70,66 +77,10 @@ double calculate_Phase_Shift(Array signal[]) {
     } else {
         i=1;
     }
+
+    printf("%d\n",i);
     return FITTING_PI/2 * (index[i][2]-index[!i][1]) / (index[!i][2]-index[!i][1]);
 
-/*
-	// find the first two amplitudes
-	for (i = 0; i < 2; i++) {
-		for (j = 1; j < signal[i].length - 1; j++) {
-			if (LOCALMAX) {
-				if (!index[i][1]) {
-					index[i][1] = j;
-					index[i][3]++;
-				} else {
-					index[i][2] = j;
-					index[i][3]++;
-					break;
-				}
-			}
-		}
-	}
-	for (i = 0; i < 2; i++) {
-		printf("%d: %lg, %d: %lg, %d: %lg %d\n", index[i][0], dt * index[i][0],
-				index[i][1], dt * index[i][1], index[i][2], dt * index[i][2],
-				index[i][3]);
-	}*/
-	// find the last two amplitudes
-	j++;
-	//size_t temp = index[0][1];
-//	while (index[0][3] == index[1][3]) {
-/*		for (; j < signal[i].length - 1; j++) {
-			for (i = 0; i < 2; i++) {
-				if (LOCALMAX) {
-					index[i][0] = index[i][1];
-					index[i][1] = index[i][2];
-					index[i][2] = j;
-					index[i][3]++; */
-					/*short xxxx;
-					for (xxxx = 0; xxxx < 2; xxxx++) {
-						printf("%d %d:: %d: %lg, %d: %lg, %d: %lg %d\n",signal[i].length, j, index[xxxx][0], dt * index[xxxx][0],
-								index[xxxx][1], dt * index[xxxx][1], index[xxxx][2], dt * index[xxxx][2],
-								index[xxxx][3]);
-					}*/
-/*				}
-			}
-			if (index[0][3] != index[1][3]) {
-				break;
-			}
-		}
-//	}
-
-	// calculate the phase shift
-#define PHASESHIFT(a,b) FITTING_PI*fabs(index[0][a]-index[1][a-b]) / ((double)(index[0][a]-index[0][a-1] + index[1][a-b]-index[1][a-b-1] )/2.)
-	if (index[0][3] == index[1][3]) {
-        // (02-12) / (02-01+12-11)
-        return PHASESHIFT(2,0);
-	} else if (index[0][3] < index[1][3]) {
-        // (02-11) / (02-01+11-10)
-        return PHASESHIFT(2,1);
-    } else {
-        // (01-12) / (01-00+12-11)
-        return PHASESHIFT(1,-1);
-	}*/
 }
 
 void angle_To_Component(Spins *spin) {
