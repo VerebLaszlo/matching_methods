@@ -21,7 +21,7 @@ double calculate_Phase_Shift(Array signal[]) {
     /// index[i][0] - number of maximums
     /// index[i][1] - the index of last but one maximum
     /// index[i][2] - the index of last maximum
-	size_t index[][4] = {
+	long index[][4] = {
 		{0, 0, 0, 0},
 		{0, 0, 0, 0}
 	};
@@ -35,7 +35,7 @@ double calculate_Phase_Shift(Array signal[]) {
                 index[i][0]++;
                 j+=diff;
 #ifdef DEBUG
-                printf("MAX%d %d. %d\n", i, index[i][0], j);
+                printf("MAX%d %ld. %d\n", i, index[i][0], j);
 #endif
             }
         }
@@ -43,7 +43,7 @@ double calculate_Phase_Shift(Array signal[]) {
         printf("\n");
 #endif
     }
-    printf("Number of maximums: %d, %d\n",index[0][0],index[1][0]);
+    printf("Number of maximums: %ld, %ld\n",index[0][0],index[1][0]);
     // if some of index is 0
     if (!(index[0][0]*index[1][0])) {
         printf("Error - no maximum!\n");
@@ -67,12 +67,15 @@ double calculate_Phase_Shift(Array signal[]) {
     }
 
     for (i=0; i<2; i++) {
-        printf("%d. %d %d\n", i, index[i][1], index[i][2]);
+        printf("%d. %ld %ld\n", i, index[i][1], index[i][2]);
     }
     
     /// TODO
     // in previous section we guarantee that the one of the index are between
     // the other indexes.
+	if (index[0][2] == index[1][2]) {
+		return 0.;
+	}
     if (index[0][2]<index[1][2] && index[0][2]>index[1][1]) {
         i=0;
     } else {
@@ -80,7 +83,8 @@ double calculate_Phase_Shift(Array signal[]) {
     }
 
     printf("%d\n",i);
-    return FITTING_PI/2 * (index[i][2]-index[!i][1]) / (index[!i][2]-index[!i][1]);
+    //return FITTING_PI/2 * (index[i][2]-index[i][1]) / (index[!i][2]-index[!i][1]);
+	return fabs(index[i][2] - index[!i][2]) * 2. * FITTING_PI / ((double)(index[i][2] - index[i][1] + index[!i][2] - index[!i][1]) / 2.);
 
 }
 
