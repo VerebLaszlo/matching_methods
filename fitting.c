@@ -17,33 +17,44 @@ double FITTING_PI = M_PI;
 double calculate_Phase_Shift(Array signal[]) {
 	// variable definitions and initialisations
 	static const size_t diff = 1;
-	size_t i, j, n;
+	size_t i, j;
     /// index[i][0] - number of maximums
     /// index[i][1] - the index of last but one maximum
     /// index[i][2] - the index of last maximum
+    /// index[i][3] - the latest maximum in !i
 	long index[][4] = {
 		{0, 0, 0, 0},
 		{0, 0, 0, 0}
 	};
+        size_t maxlength,minlength;
 
-#define LOCALMAX (signal[i].data[j-1] < signal[i].data[j] && signal[i].data[j+1] < signal[i].data[j])
-    for (i=0; i<2; i++) {
-        for (j=1; j<signal[i].length-1; j++) {
+        // i stores the maximum
+        i = signal[0].length<signal[1].length;
+        maxlength = signal[i].length;
+        minlength = signal[!i].length;
+
+#define SIGNAL(i,j) signal[i].data[j]
+#define LOCALMAX ( SIGNAL(i,j-1) < SIGNAL(i,j) && SIGNAL(i,j+1) < SIGNAL(i,j) )
+    for (j=1; j<minlength-1; j++) {
+        for (i=0; i<2; i++) {
             if (LOCALMAX) {
                 index[i][1] = index[i][2];
-                index[i][2] = j,
+                index[i][2] = j;
+                index[i][3] = index[!i][2];
                 index[i][0]++;
-                j+=diff;
 #ifdef DEBUG
-                printf("MAX%d %ld. %d\n", i, index[i][0], j);
+                printf("MAX%d %ld. %d (%ld)\n", i, index[i][0], j, index[!i][2]);
 #endif
+                j+=diff;
             }
         }
-#ifdef DEBUG
-        printf("\n");
-#endif
     }
+#ifdef DEBUG
     printf("Number of maximums: %ld, %ld\n",index[0][0],index[1][0]);
+    printf("Latest maximums:\n\t%ld %ld %ld\n\t%ld %ld %ld\n",
+            index[0][1],index[0][2],index[0][3],
+            index[1][1],index[1][2],index[1][3]);
+#endif
     // if some of index is 0
     if (!(index[0][0]*index[1][0])) {
         printf("Error - no maximum!\n");
@@ -51,19 +62,15 @@ double calculate_Phase_Shift(Array signal[]) {
     }
 
     // if the number of maximums are non-equal
-    if (index[0][0] != index[1][0]) {
+    if (abs(index[0][0]-index[1][0]) > 1) {
         // which signal has more maximum
         i = index[0][0]<index[1][0]; 
-        n = index[i][0]-index[!i][0]+2;
+        index[i][2] = index[!i][3];
         j = index[i][2];
-        while (n>0) {
-            while (!(LOCALMAX)) {
-                j--;
-            }
-            index[i][2] = index[i][1];
-            index[i][1] = j;
-            j--; n--;
+        while (!(LOCALMAX)) {
+            j--;
         }
+        index[i][1] = j;
     }
 
     for (i=0; i<2; i++) {
@@ -73,18 +80,16 @@ double calculate_Phase_Shift(Array signal[]) {
     /// TODO
     // in previous section we guarantee that the one of the index are between
     // the other indexes.
-	if (index[0][2] == index[1][2]) {
-		return 0.;
-	}
+    if (index[0][2] == index[1][2]) {
+            return 0.;
+    }
     if (index[0][2]<index[1][2] && index[0][2]>index[1][1]) {
         i=0;
     } else {
         i=1;
     }
 
-    printf("%d\n",i);
-    //return FITTING_PI/2 * (index[i][2]-index[i][1]) / (index[!i][2]-index[!i][1]);
-	return fabs(index[i][2] - index[!i][2]) * 2. * FITTING_PI / ((double)(index[i][2] - index[i][1] + index[!i][2] - index[!i][1]) / 2.);
+    return fabs(index[i][2] - index[!i][2]) * 2. * FITTING_PI / ((double)(index[i][2] - index[i][1] + index[!i][2] - index[!i][1]) / 2.);
 
 }
 
