@@ -26,13 +26,14 @@ double calculate_Phase_Shift(Array signal[]) {
 		{0, 0, 0, 0}
 	};
 
-#define LOCALMAX (signal[i].data[j-diff] < signal[i].data[j] && signal[i].data[j+diff] < signal[i].data[j])
+#define LOCALMAX (signal[i].data[j-1] < signal[i].data[j] && signal[i].data[j+1] < signal[i].data[j])
     for (i=0; i<2; i++) {
         for (j=1; j<signal[i].length-1; j++) {
             if (LOCALMAX) {
                 index[i][1] = index[i][2];
                 index[i][2] = j,
                 index[i][0]++;
+                j+=diff;
 #ifdef DEBUG
                 printf("MAX%d %d. %d\n", i, index[i][0], j);
 #endif
@@ -44,7 +45,7 @@ double calculate_Phase_Shift(Array signal[]) {
     }
     printf("Number of maximums: %d, %d\n",index[0][0],index[1][0]);
     // if some of index is 0
-    if (!index[0][0]*index[1][0]) {
+    if (!(index[0][0]*index[1][0])) {
         printf("Error - no maximum!\n");
         return -1;
     }
