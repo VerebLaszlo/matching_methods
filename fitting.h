@@ -25,6 +25,7 @@ extern double FITTING_PI;
  * @return	the phase shift, -1 if error accoured
  */
 double calculate_Phase_Shift(Array signal[]);
+double calculate_Phase_Shift1(Array signal[]);
 
 ///	The statistic
 typedef struct {

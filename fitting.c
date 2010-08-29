@@ -14,6 +14,49 @@
 double dt;
 double FITTING_PI = M_PI;
 
+double calculate_Phase_Shift1(Array signal[]) {
+	short found[2] = {1, 1};
+	size_t ind[2] = {2, 2};
+	long index[2][3] = {{0, 0, 0}, {0, 0, 0}};
+	size_t i;
+
+#define SIGNAL(i,j) signal[i].data[j]
+#define LOCALMAX ( SIGNAL(i,ind[i]-2) < SIGNAL(i,ind[i]) && SIGNAL(i,ind[i]-1) < SIGNAL(i,ind[i]) &&\
+				   SIGNAL(i,ind[i]+1) < SIGNAL(i,ind[i]) && SIGNAL(i,ind[i]+2) < SIGNAL(i,ind[i]))
+	while (found[0] && found[1]) {
+		for (i = 0; i < 2; i++) {
+			for (;ind[i] < signal[i].length - 2; ind[i]++) {
+				if ((found[i] = LOCALMAX)) {
+					printf("%d %d ", i, ind[i]);
+					if (index[i][0]) {
+						index[i][2] = index[i][1];
+						index[i][1] = index[i][0];
+						index[i][0] = ind[i];
+					} else if (index[i][1]) {
+						index[i][0] = ind[i];
+					} else {
+						index[i][1] = ind[i];
+					}
+					ind[i]++;
+					break;
+				}
+			}
+			if (!found[i]) {
+				break;
+			}
+		}
+		puts("");
+	}
+#undef LOCALMAX
+	if (found[0] && !found[1]) {
+		index[0][0] = index[0][1];
+		index[0][1] = index[0][2];
+	}
+	printf("%ld %ld\n", index[0][1], index[0][0]);
+	printf("%ld %ld\n", index[1][1], index[1][0]);
+    return fabs(index[0][0] - index[1][0]) * 2. * FITTING_PI / ((double)(index[0][0] - index[0][1] + index[1][0] - index[1][1]) / 2.);
+}
+
 double calculate_Phase_Shift(Array signal[]) {
 	// variable definitions and initialisations
 	static const size_t diff = 1;
