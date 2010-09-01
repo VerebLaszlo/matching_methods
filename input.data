@@ -1,5 +1,5 @@
-3.4	34	0.077934276	0.156671629 0.967892924	0.107035774	-0.15506005	0.882409491 1.429888	50	600	1	6.1035156e-05	twoPN		spin-inter
-m1	m2	s1x			s1y			s1z			s2x			s2y			s2z			incl		fI	fF	d	dt				pnorder		ALL
+3.4	34	0.077934276	0.156671629 0.967892924	0.107035774	-0.15506005	0.882409491 1.429888	50	600	1	6.1035156e-05	twoPN		ALL
+m1	m2	s1x			s1y			s1z			s2x			s2y			s2z			incl		fI	fF	d	dt				pnorder		spin-inter
 ######
 #best		dt=7.6035156e-05
 #error		dt=2.0035156e-05

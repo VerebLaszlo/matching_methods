@@ -49,7 +49,7 @@ typedef struct {
 	double lower;	///< the lower boundary of the spins
 	double upper;	///< the upper boundary of the spins
 	double step;	///< the step of the spins
-	Spins spin[1];	///< the spin parameters
+	Spins spin[2];	///< the spin parameters
 	double fp;		///< the plus antenna function
 	double fc;		///< the cross antenna function
 	double theta;	///< angle for \f$f_p\f$, \f$f_\times\f$

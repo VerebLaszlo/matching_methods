@@ -40,7 +40,7 @@ double randn(double n);
  * @return the random number.
  */
 double randnk(double lower, double upper);
-#define RANDNK(A,B) ((A) + (B)) * RAND1 - (A);
+#define RANDNK(A,B) ((B) - (A)) * RAND1 + (A)
 
 /**		Returns the smallest power of two no less than num.
  * @param[in]	num	: 

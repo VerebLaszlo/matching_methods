@@ -9,6 +9,7 @@
 #include <lal/LALStdlib.h>
 #include <lal/LALInspiral.h>
 #include <lal/GeneratePPNInspiral.h>
+#include <lal/LALSQTPNWaveformInterface.h>
 #include <lal/GenerateInspiral.h>
 
 double dt;
@@ -27,7 +28,7 @@ double calculate_Phase_Shift1(Array signal[]) {
 		for (i = 0; i < 2; i++) {
 			for (;ind[i] < signal[i].length - 2; ind[i]++) {
 				if ((found[i] = LOCALMAX)) {
-					printf("%d %d ", i, ind[i]);
+					//printf("%d %d ", i, ind[i]);
 					if (index[i][0]) {
 						index[i][2] = index[i][1];
 						index[i][1] = index[i][0];
@@ -45,15 +46,15 @@ double calculate_Phase_Shift1(Array signal[]) {
 				break;
 			}
 		}
-		puts("");
+		//puts("");
 	}
 #undef LOCALMAX
 	if (found[0] && !found[1]) {
 		index[0][0] = index[0][1];
 		index[0][1] = index[0][2];
 	}
-	printf("%ld %ld\n", index[0][1], index[0][0]);
-	printf("%ld %ld\n", index[1][1], index[1][0]);
+	//printf("%ld %ld\n", index[0][1], index[0][0]);
+	//printf("%ld %ld\n", index[1][1], index[1][0]);
     return fabs(index[0][0] - index[1][0]) * 2. * FITTING_PI / ((double)(index[0][0] - index[0][1] + index[1][0] - index[1][1]) / 2.);
 }
 
@@ -142,26 +143,18 @@ void angle_To_Component(Spins *spin) {
 		spin[i].x = spin[i].chi * sqrt(1. - SQR(spin[i].cth)) * cos(spin[i].phi);
 		spin[i].y = spin[i].chi * sqrt(1. - SQR(spin[i].cth)) * sin(spin[i].phi);
 		spin[i].z = spin[i].chi * spin[i].cth;
+		printf("C: %d, x=%lg,\ty=%lg,\tz=%lg\n",i , spin[i].x, spin[i].y, spin[i].z);
 	}
 }
 
-Statistic chi_Statistic(SimInspiralTable *params, 
-		PPNParamStruc *pparams,
-		Params par) {
+Statistic chi_Statistic(SimInspiralTable *params, PPNParamStruc *pparams, Params par) {
 	LALStatus status;
 	CoherentGW wave[2];
-	memset(&status, 0, sizeof(LALStatus));
-	memset(&wave[0], 0, sizeof(CoherentGW));
-	memset(&wave[1], 0, sizeof(CoherentGW));
 	Array signal[2];
 	Statistic stat;
-	stat.size = (size_t)ceil((par.upper - par.lower) / par.step);
+ 	stat.size = (size_t)ceil((par.upper - par.lower) / par.step) + 1;
 	stat.stat = malloc(stat.size * stat.size * sizeof(double));
-	double actual[2] = {par.lower + par.step, par.lower + par.step};
-	/*double fp = 0.5 * (1. + par.theta * par.theta) * cos(par.phi) * cos(par.pol) -
-		par.theta * sin(par.phi) * sin(par.pol);
-	double fc = 0.5 * (1. + par.theta * par.theta) * cos(par.phi) * sin(par.pol) -
-		par.theta * sin(par.phi) * cos(par.pol);*/
+	double actual[2] = {par.lower, par.lower};
 
 	size_t s1, s2, i, j;
 	double a1, a2, phi, shift;
@@ -169,17 +162,19 @@ Statistic chi_Statistic(SimInspiralTable *params,
 		par.spin[0].chi = actual[0];
 		for (s2 = 0; s2 < stat.size; s2++) {
 			par.spin[1].chi = actual[1];
-			printf("%d %d, %lg %lg\n", s1, s2, par.spin[0].chi, par.spin[1].chi);
+			printf("X %lg, %lg\n", par.spin[0].chi, par.spin[1].chi);
 			angle_To_Component(par.spin);
+			params->spin1x = par.spin[0].x;
+			params->spin1y = par.spin[0].y;
+			params->spin1z = par.spin[0].z;
+			params->spin2x = par.spin[1].x;
+			params->spin2y = par.spin[1].y;
+			params->spin2z = par.spin[1].z;
 			for (i = 0; i < 2; i++) {
-				params->spin1x = par.spin[0].x = 0.077934276;
-				params->spin1y = par.spin[0].y = 0.156671629 ;
-				params->spin1z = par.spin[0].z = 0.967892924;
-				params->spin2x = par.spin[1].x = 0.107035774;
-				params->spin2y = par.spin[1].y = -0.15506005;
-				params->spin2z = par.spin[1].z = 0.882409491;
-				//printf("%lg %lg %lg\n", par.spin[0].x, par.spin[0].y, par.spin[0].z);
-				//printf("%lg %lg %lg\n", par.spin[1].x, par.spin[1].y, par.spin[1].z);
+				memset(&status, 0, sizeof(LALStatus));
+				memset(&wave[0], 0, sizeof(CoherentGW));
+				memset(&wave[1], 0, sizeof(CoherentGW));
+				//printf("C: %d, x=%lg,\ty=%lg,\tz=%lg\n",i , par.spin[i].x, par.spin[i].y, par.spin[i].z);
 				LALGenerateInspiral(&status, &wave[i], params, pparams);
 				if (status.statusCode) {
 					fprintf( stderr, "LALSQTPNWaveformTest: error generating waveform\n" );
@@ -195,16 +190,16 @@ Statistic chi_Statistic(SimInspiralTable *params,
 					shift   = wave[i].shift->data->data[j];
 					signal[i].data[j] = par.fp * (a1*cos(shift)*cos(phi) - a2*sin(shift)*sin(phi)) +
 										par.fc * (a1*sin(shift)*cos(phi) + a2*cos(shift)*sin(phi));
+					if (j > signal[i].length - 10) {
+						printf("%lg ", signal[i].data[j]);
+					}
 				}
+				XLALSQTPNDestroyCoherentGW(&wave[i]);
+				puts("");
 			}
-			/*
-			FILE *out = fopen("out.out", "w");
-			size_t xxx;
-			for (xxx=0; xxx < signal[0].length; xxx++) {
-				fprintf(out, "%lg %lg\n", xxx * dt, signal[0].data[xxx]);
-			}
-			fclose(out);*/
-			stat.stat[s1 + stat.size * s2] = calculate_Phase_Shift(signal);
+			stat.stat[s1 + stat.size * s2] = calculate_Phase_Shift1(signal);
+			freeArray(&signal[0]);
+			freeArray(&signal[1]);
 			actual[1] += par.step;
 		}
 		actual[0] += par.step;
