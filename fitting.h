@@ -63,6 +63,6 @@ typedef struct {
  * @param[in]	par		: other parameters
  * @return	the statistic
  */
-Statistic chi_Statistic(SimInspiralTable *params, PPNParamStruc *pparams, Params par);
+void chi_Statistic(Statistic *stat, SimInspiralTable *params, PPNParamStruc *pparams, Params *par);
 
 #endif // FITTING_H

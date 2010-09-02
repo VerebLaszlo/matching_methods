@@ -18,7 +18,6 @@ int main(int argc, char* argv[]) {
 				"Correct parameter order: m1 m2 S1x S1y S1z S2x S2y S2z incl f_lower f_final distance dt PNorder Spin filename\n");
 		return (1);
 	}
-
     const char *filename = argv[16];
 	char PNString [50];
 	sprintf(PNString, "SpinQuadTaylor%s%s", argv[14], argv[15]);
@@ -42,38 +41,38 @@ int main(int argc, char* argv[]) {
 	ppnParams.deltaT = atof(argv[13]);
 	injParams.polarization = 0;
 	LALSnprintf(injParams.waveform, LIGOMETA_WAVEFORM_MAX * sizeof(CHAR), PNString);
-
 	Params par;
-	srand(time(NULL));
+	//srand(time(NULL));
+	srand(23);
 	par.spin[0].cth = RANDNK(-1, 1);
 	par.spin[1].cth = RANDNK(-1, 1);
 	par.spin[0].phi = RANDNK(0, 2. * FITTING_PI);
 	par.spin[1].phi = RANDNK(0, 2. * FITTING_PI);
+	printf("%lg %lg %lg %lg\n", par.spin[0].cth, par.spin[0].phi, par.spin[1].cth, par.spin[1].phi);
 	par.spin[0].m = atof(argv[1]);
 	par.spin[1].m = atof(argv[2]);
 	dt = atof(argv[13]);
-	par.lower = 0.;
+	par.lower = 0.5;
 	par.upper = 1.;
-	par.step = 0.1;
+	par.step = 0.02;
 	par.theta = par.phi = par.pol = 0.;
 	par.fp = 0.5 * (1. + SQR(par.theta)) * cos(par.phi) * cos(par.pol) - par.theta * sin(par.phi) * sin(par.pol);
-	//printf("%lg\t%lg\n", par.spin[0].cth, par.spin[0].phi);
-	//printf("%lg\t%lg\n", par.spin[1].cth, par.spin[1].phi);
 	par.fc = 0.5 * (1. + SQR(par.theta)) * cos(par.phi) * sin(par.pol) - par.theta * sin(par.phi) * cos(par.pol);
-	//printf("%lg\t%lg\n", par.spin[0].cth, par.spin[0].phi);
-	//printf("%lg\t%lg\n", par.spin[1].cth, par.spin[1].phi);
-	Statistic chi_stat;
-	chi_stat = chi_Statistic(&injParams, &ppnParams, par);
-	FILE *file = fopen(filename, "w");
+	Statistic stat;
+ 	stat.size = (size_t)ceil((par.upper - par.lower) / par.step) + 1;
+	stat.stat = malloc(stat.size * stat.size * sizeof(double));
+	chi_Statistic(&stat, &injParams, &ppnParams, &par);
+/*	FILE *file = fopen(filename, "w");
 	size_t i, j;
 	for (i = 0; i < chi_stat.size; i++) {
 		for (j = 0; j < chi_stat.size; j++) {
-			printf("%15.10lg %15.10lg %15.10lg\n", par.lower + (double)i * par.step, par.lower + (double)j * par.step, chi_stat.stat[i + j * chi_stat.size]);
-			fprintf(file, "%15.10lg %15.10lg %15.10lg\n", par.lower + (double)i * par.step, par.lower + (double)j * par.step, chi_stat.stat[i + j * chi_stat.size]);
+			printf("%lg %lg %lg\n", par.lower + (double)i * par.step, par.lower + (double)j * par.step, chi_stat.stat[i + j * chi_stat.size]);
+			fprintf(file, "%lg %lg %lg\n", par.lower + (double)i * par.step, par.lower + (double)j * par.step, chi_stat.stat[i + j * chi_stat.size]);
 		}
+		fprintf(file, "\n");
 	}
-	fclose(file);
-	free(chi_stat.stat);
+	fclose(file);*/
+	free(stat.stat);
 	puts("Done!");
 	return 0;
 }
