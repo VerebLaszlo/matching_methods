@@ -35,6 +35,7 @@ double calculate_Phase_Shift1(Array signal[]) {
 #define LOCALMAX ( SIGNAL(i,ind[i]-2) < SIGNAL(i,ind[i]) && SIGNAL(i,ind[i]-1) < SIGNAL(i,ind[i]) &&\
 				   SIGNAL(i,ind[i]+1) < SIGNAL(i,ind[i]) && SIGNAL(i,ind[i]+2) < SIGNAL(i,ind[i]))
 	while (found[0] && found[1]) {
+		found[0] = found[1] = 0;	// pontosan miért is kell?
 		for (i = 0; i < 2; i++) {
 			for (;ind[i] < signal[i].length - 2; ind[i]++) {
 				if ((found[i] = LOCALMAX)) {
@@ -59,13 +60,13 @@ double calculate_Phase_Shift1(Array signal[]) {
 //		printf("%d ", xxx / 2);
 	}
 //	puts("");
-#undef LOCALMAX
 	if (found[0] && !found[1]) {
 		index[0][0] = index[0][1];
 		index[0][1] = index[0][2];
 	}
     return fabs(index[0][0] - index[1][0]) * 2. * FITTING_PI / ((double)(index[0][0] - index[0][1] + index[1][0] - index[1][1]) / 2.);
 }
+#undef LOCALMAX
 
 double calculate_Phase_Shift(Array signal[]) {
 	// variable definitions and initialisations

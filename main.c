@@ -42,8 +42,8 @@ int main(int argc, char* argv[]) {
 	injParams.polarization = 0;
 	LALSnprintf(injParams.waveform, LIGOMETA_WAVEFORM_MAX * sizeof(CHAR), PNString);
 	Params par;
-	//srand(time(NULL));
-	srand(23);
+	srand(time(NULL));
+	//srand(10);
 	par.spin[0].cth = RANDNK(-1, 1);
 	par.spin[1].cth = RANDNK(-1, 1);
 	par.spin[0].phi = RANDNK(0, 2. * FITTING_PI);
@@ -52,7 +52,7 @@ int main(int argc, char* argv[]) {
 	par.spin[0].m = atof(argv[1]);
 	par.spin[1].m = atof(argv[2]);
 	dt = atof(argv[13]);
-	par.lower = 0.5;
+	par.lower = 0.0;
 	par.upper = 1.;
 	par.step = 0.02;
 	par.theta = par.phi = par.pol = 0.;
