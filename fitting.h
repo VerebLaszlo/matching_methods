@@ -55,7 +55,10 @@ typedef struct {
 	double theta;	///< angle for \f$f_p\f$, \f$f_\times\f$
 	double phi;		///< angle for \f$f_p\f$, \f$f_\times\f$
 	double pol;		///< polariosation angle
+	short index;	///< index of the run
 } Params;
+
+void angle_To_Component(Spins *spin);
 
 /**		Returns the chi statistic of the waveform with given parameters.
  * @param[in]	params	: inspiral parameters of the waveform
@@ -64,5 +67,7 @@ typedef struct {
  * @return	the statistic
  */
 void chi_Statistic(Statistic *stat, SimInspiralTable *params, PPNParamStruc *pparams, Params *par);
+void phi_Statistic(Statistic *stat, SimInspiralTable *params, PPNParamStruc *pparams, Params *par);
+void cth_Statistic(Statistic *stat, SimInspiralTable *params, PPNParamStruc *pparams, Params *par);
 
 #endif // FITTING_H

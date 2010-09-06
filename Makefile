@@ -37,7 +37,7 @@ fitting.o: fitting.c fitting.h util_math.o datatypes.o
 	@echo ''
 
 rmain: main
-	./main `head -n 1 input.data` stat.txt
+	./main `head -n 1 input.data` stat.txt 5
 	@echo ''
 
 wave: LALSQTPNWaveformTest.c
