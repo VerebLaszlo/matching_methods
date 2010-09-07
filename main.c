@@ -13,7 +13,7 @@ int main(int argc, char* argv[]) {
 	PPNParamStruc ppnParams;
 	if (argc != 18) {
 		short xx;
-		for (xx = 0; xx <= argc; xx++) {
+		for (xx = 0; xx < argc; xx++) {
 			printf("%s\n", argv[xx]);
 		}
 		printf(
@@ -47,9 +47,10 @@ int main(int argc, char* argv[]) {
 	LALSnprintf(injParams.waveform, LIGOMETA_WAVEFORM_MAX * sizeof(CHAR), PNString);
 	Params par;
 	par.lower = 0.0;
-	//par.lower = -1.0;
+//	par.lower = -1.0;
 	par.upper = 1.;
-	par.step = 0.005;
+	par.step = 0.01;
+	printf("%30.25lg\n", par.step);
 	par.theta = par.phi = par.pol = 0.;
 	par.fp = 0.5 * (1. + SQR(par.theta)) * cos(par.phi) * cos(par.pol) - par.theta * sin(par.phi) * sin(par.pol);
 	par.fc = 0.5 * (1. + SQR(par.theta)) * cos(par.phi) * sin(par.pol) - par.theta * sin(par.phi) * cos(par.pol);
@@ -66,17 +67,17 @@ int main(int argc, char* argv[]) {
 	injParams.spin2z = 0.622381;
 */
 	par.spin[0].chi = par.spin[1].chi = 1.;
-	par.spin[0].phi = 3.;
-	par.spin[1].phi = 3.1;
+	par.spin[0].cth = 0.6;
+	par.spin[1].cth = -0.4;
 	for (par.index = 0; par.index < atoi(argv[17]); par.index++) {
 		//srand(time(NULL));
-		par.spin[0].cth = RANDNK(-1, 1);
-		par.spin[1].cth = RANDNK(-1, 1);
-		///par.spin[0].phi = RANDNK(0, 2. * FITTING_PI);
-		///par.spin[1].phi = RANDNK(0, 2. * FITTING_PI);
+//		par.spin[1].cth = par.spin[0].cth = RANDNK(-1, 1);
+//		par.spin[1].cth = RANDNK(-1, 1);
+		par.spin[0].phi = RANDNK(0, 2. * FITTING_PI);
+		par.spin[1].phi = RANDNK(2., 4.);
 		//printf("%d: %lg %lg %lg %lg\n", par.index, par.spin[0].cth, par.spin[0].phi, par.spin[1].cth, par.spin[1].phi);
-		//chi_Statistic(&stat, &injParams, &ppnParams, &par);
-		phi_Statistic(&stat, &injParams, &ppnParams, &par);
+		chi_Statistic(&stat, &injParams, &ppnParams, &par);
+		//phi_Statistic(&stat, &injParams, &ppnParams, &par);
 		//cth_Statistic(&stat, &injParams, &ppnParams, &par);
 	}
 /*	FILE *file = fopen(filename, "w");

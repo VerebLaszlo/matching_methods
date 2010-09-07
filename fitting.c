@@ -169,13 +169,21 @@ double calculate_Phase_Shift(Array signal[]) {
 
 void angle_To_Component(Spins *spin) {
 	short i;
+	const double epsilon = 1e-14;
+	double x;
 	for (i = 0; i < 2; i++) {
-		spin[i].x = spin[i].chi * sqrt(1. - SQR(spin[i].cth)) * cos(spin[i].phi);
-		spin[i].y = spin[i].chi * sqrt(1. - SQR(spin[i].cth)) * sin(spin[i].phi);
+		x = 1. - SQR(spin[i].cth);
+		while (x < 0.) {
+			x += epsilon;
+			printf("X: %30.25lg\n", x);
+		}
+		spin[i].x = spin[i].chi * sqrt(1. - SQR(spin[i].cth) + epsilon) * cos(spin[i].phi);
+		spin[i].y = spin[i].chi * sqrt(1. - SQR(spin[i].cth) + epsilon) * sin(spin[i].phi);
 		spin[i].z = spin[i].chi * spin[i].cth;
 //		puts("================================");
 //		printf("%lg %lg %lg\n", spin[i].x, spin[i].y, spin[i].z);
-//		printf("%lg %lg %lg\n", spin[i].chi, spin[i].cth, spin[i].phi);
+//		printf("%30.25lg %30.25lg %30.25lg\n", spin[i].chi, spin[i].cth, spin[i].phi);
+//		printf("%30.25lg %30.25lg %30.25lg\n", sqrt(x), x, spin[i].cth);
 //		puts("================================");
 	}
 }
@@ -186,7 +194,7 @@ void chi_Statistic(Statistic *stat, SimInspiralTable *params, PPNParamStruc *ppa
 	Array signal[2];
 	char PNString[50];
 	char filename[50];
-	sprintf(filename, "stat%d.txt", par->index);
+	sprintf(filename, "chi_stat%d.txt", par->index);
 	double actual[2] = {par->lower, par->lower};
 	memset(&status, 0, sizeof(LALStatus));
 	memset(&wave[0], 0, sizeof(CoherentGW));
@@ -235,8 +243,9 @@ void chi_Statistic(Statistic *stat, SimInspiralTable *params, PPNParamStruc *ppa
 			freeArray(&signal[0]);
 			freeArray(&signal[1]);
 			fprintf(file, "%lg %lg %lg\n", actual[0], actual[1], stat->stat[s1 + stat->size * s2]);
-			if (s1 % 10 == 0 && s2 % 10 == 0)
-			printf("%lg %lg, stat= %lg\n", actual[0], actual[1], stat->stat[s1 + stat->size * s2]);fflush(stdout);
+			if (s1 % 10 == 0 && s2 % 10 == 0) {
+				printf("%lg %lg, stat= %lg\n", actual[0], actual[1], stat->stat[s1 + stat->size * s2]);fflush(stdout);
+			}
 			actual[1] += par->step;
 		}
 		actual[0] += par->step;
@@ -252,7 +261,7 @@ void phi_Statistic(Statistic *stat, SimInspiralTable *params, PPNParamStruc *ppa
 	Array signal[2];
 	char PNString[50];
 	char filename[50];
-	sprintf(filename, "stat%d.txt", par->index);
+	sprintf(filename, "phi_stat%d.txt", par->index);
 	double actual[2] = {0, 0};
 	memset(&status, 0, sizeof(LALStatus));
 	memset(&wave[0], 0, sizeof(CoherentGW));
@@ -301,7 +310,7 @@ void phi_Statistic(Statistic *stat, SimInspiralTable *params, PPNParamStruc *ppa
 			freeArray(&signal[0]);
 			freeArray(&signal[1]);
 			fprintf(file, "%lg %lg %lg\n", actual[0], actual[1], stat->stat[s1 + stat->size * s2]);fflush(file);
-			if (s1 % 10 == 0 && s2 % 10 == 0)
+			if (s1 % 50 == 0 && s2 % 50 == 0)
 			printf("%lg %lg, stat= %lg\n", actual[0], actual[1], stat->stat[s1 + stat->size * s2]);fflush(stdout);
 			actual[1] += 2 * FITTING_PI * par->step;
 		}
@@ -318,7 +327,7 @@ void cth_Statistic(Statistic *stat, SimInspiralTable *params, PPNParamStruc *ppa
 	Array signal[2];
 	char PNString[50];
 	char filename[50];
-	sprintf(filename, "stat%d.txt", par->index);
+	sprintf(filename, "cth_stat%d.txt", par->index);
 	double actual[2] = {-1, -1};
 	memset(&status, 0, sizeof(LALStatus));
 	memset(&wave[0], 0, sizeof(CoherentGW));
@@ -353,9 +362,7 @@ void cth_Statistic(Statistic *stat, SimInspiralTable *params, PPNParamStruc *ppa
 					stat->stat[s1 + stat->size * s2] = -1.;
 					break;
 				}
-				printf("%lg\n", wave[i].phi->data->data[1]);fflush(stdout);
 				mallocArray(&signal[i], wave[i].phi->data->length);
-			puts("R");
 				for (j = 0; j < signal[i].length; j++) {
 					a1  = wave[i].a->data->data[2*j];
 					a2  = wave[i].a->data->data[2*j+1];
@@ -369,13 +376,14 @@ void cth_Statistic(Statistic *stat, SimInspiralTable *params, PPNParamStruc *ppa
 			stat->stat[s1 + stat->size * s2] = calculate_Phase_Shift1(signal);
 			freeArray(&signal[0]);
 			freeArray(&signal[1]);
+			//printf("%30.25lg %30.25lg, stat= %30.25lg, %30.25lg\n", actual[0], actual[1], stat->stat[s1 + stat->size * s2], par->step);fflush(stdout);
 			fprintf(file, "%lg %lg %lg\n", actual[0], actual[1], stat->stat[s1 + stat->size * s2]);fflush(file);
-			printf("%d %d, %lg %lg\n", s1, s2, actual[0], actual[1]);fflush(stdout);
-			if (s1 % 10 == 0 && s2 % 10 == 0)
-			printf("%lg %lg, stat= %lg\n", actual[0], actual[1], stat->stat[s1 + stat->size * s2]);fflush(stdout);
-			actual[1] += 2 * par->step;
+			if (s1 % 10 == 0 && s2 % 10 == 0) {
+				printf("%30.25lg %30.25lg, stat= %30.25lg, %30.25lg\n", actual[0], actual[1], stat->stat[s1 + stat->size * s2], par->step);fflush(stdout);
+			}
+			actual[1] += 1. * par->step;
 		}
-		actual[0] += 2 * par->step;
+		actual[0] += 1. * par->step;
 		actual[1] = par->lower;
 		fprintf(file, "\n");
 	}
