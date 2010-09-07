@@ -56,6 +56,7 @@ typedef struct {
 	double phi;		///< angle for \f$f_p\f$, \f$f_\times\f$
 	double pol;		///< polariosation angle
 	short index;	///< index of the run
+	char name[10];	
 } Params;
 
 void angle_To_Component(Spins *spin);
@@ -66,6 +67,7 @@ void angle_To_Component(Spins *spin);
  * @param[in]	par		: other parameters
  * @return	the statistic
  */
+void make_Statistic(Statistic *stat, SimInspiralTable *params, PPNParamStruc *pparams, Params *par);
 void chi_Statistic(Statistic *stat, SimInspiralTable *params, PPNParamStruc *pparams, Params *par);
 void phi_Statistic(Statistic *stat, SimInspiralTable *params, PPNParamStruc *pparams, Params *par);
 void cth_Statistic(Statistic *stat, SimInspiralTable *params, PPNParamStruc *pparams, Params *par);
