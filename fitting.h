@@ -68,8 +68,5 @@ void angle_To_Component(Spins *spin);
  * @return	the statistic
  */
 void make_Statistic(Statistic *stat, SimInspiralTable *params, PPNParamStruc *pparams, Params *par);
-void chi_Statistic(Statistic *stat, SimInspiralTable *params, PPNParamStruc *pparams, Params *par);
-void phi_Statistic(Statistic *stat, SimInspiralTable *params, PPNParamStruc *pparams, Params *par);
-void cth_Statistic(Statistic *stat, SimInspiralTable *params, PPNParamStruc *pparams, Params *par);
 
 #endif // FITTING_H
