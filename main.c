@@ -9,6 +9,7 @@
 #include "util_math.h"
 
 extern double FITTING_PI;
+extern double step;
 
 int main(int argc, char* argv[]) {
 	SimInspiralTable injParams;
@@ -51,7 +52,8 @@ int main(int argc, char* argv[]) {
 	par.spin[0].chi = par.spin[1].chi = 1.;
 	par.lower = 0.0;
 	par.upper = 1.0;
-	par.step = 0.1;
+	par.step = step;
+	printf("%lg\n", par.step);
 	sprintf(par.name, "chi");
 	sprintf(par.name, "phi");
 //	sprintf(par.name, "cth");
@@ -62,6 +64,7 @@ int main(int argc, char* argv[]) {
  	stat.size = (size_t)ceil((par.upper - par.lower) / par.step) + 1;
 	stat.stat = malloc(stat.size * stat.size * sizeof(double));
 	srand(10);
+	//srand(time(NULL));
 /*
 	injParams.spin1x = -0.0318158;
 	injParams.spin1y = 0.746334;
@@ -71,7 +74,6 @@ int main(int argc, char* argv[]) {
 	injParams.spin2z = 0.622381;
 */
 	for (par.index = 0; par.index < atoi(argv[17]); par.index++) {
-		//srand(time(NULL));
 		par.spin[0].cth = RANDNK(-1, 1);
 		par.spin[1].cth = RANDNK(-1, 1);
 		//par.spin[0].phi = RANDNK(0., 2. * FITTING_PI);

@@ -73,18 +73,20 @@ double calculate_Phase_Shift1(Array signal[]) {
 				   SIGNAL(i,j+1) <= SIGNAL(i,j) && SIGNAL(i,j+2) < SIGNAL(i,j))
 double calculate_Phase_Shift2(Array signal[]) {
 	long num_Of_Max[2] = {0, 0};
-	double phase_Shift;
+	size_t index[2];
 	size_t i, j;
 	for (i = 0; i < 2; i++) {
 		for (j = 2; j < signal[i].length - 2; j++) {
 			if (LOCALMAX) {
 				num_Of_Max[i]++;
+				index[i] = j;
 			}
 		}
 	}
-	phase_Shift = FITTING_PI * (num_Of_Max[0] - num_Of_Max[1]);
-	//printf("%d %d, sqt-st: %ld, %lg\n", num_Of_Max[0], num_Of_Max[1], num_Of_Max[0] - num_Of_Max[1], phase_Shift);
-	return phase_Shift;
+	printf("%d %d\n", index[0], index[1]);
+	exit(-1);
+	//return FITTING_PI * (num_Of_Max[0] - num_Of_Max[1]);
+	return num_Of_Max[0] - num_Of_Max[1];
 }
 
 #undef LOCALMAX
@@ -188,21 +190,25 @@ void angle_To_Component(Spins *spin) {
 	}
 }
 
+double step = 0.02;
 void make_Statistic(Statistic *stat, SimInspiralTable *params, PPNParamStruc *pparams, Params *par) {
 	double *new[2];
 	if (strstr(par->name, "chi")) {
+		puts("C");
 		new[0] = &par->spin[0].chi;
 		new[1] = &par->spin[1].chi;
 	} else if (strstr(par->name, "phi")) {
+//		puts("P");
 		par->lower = 0.0;
 		par->upper = 2. * FITTING_PI;
-		par->step *= par->upper;
+		par->step = step * par->upper;
 		new[0] = &par->spin[0].phi;
 		new[1] = &par->spin[1].phi;
 	} else {
+		puts("T");
 		par->lower = -1.0;
 		par->upper = 1.0;
-		par->step *= 2.;
+		par->step = step * 2.;
 		new[0] = &par->spin[0].cth;
 		new[1] = &par->spin[1].cth;
 	}
@@ -264,8 +270,8 @@ void make_Statistic(Statistic *stat, SimInspiralTable *params, PPNParamStruc *pp
 			freeArray(&signal[0]);
 			freeArray(&signal[1]);
 			fprintf(file, "%lg %lg %lg\n", actual[0], actual[1], stat->stat[s1 + stat->size * s2]);
-			if (s1 % 10 == 0 || s2 % 10 == 0) {
-				printf("%lg %lg, stat= %lg\n", actual[0], actual[1], stat->stat[s1 + stat->size * s2]);fflush(stdout);
+			if (s1 % 10 == 0 && s2 % 10 == 0) {
+				printf("X: %d %d: %lg %lg, stat= %lg\n", s1, s2, actual[0], actual[1], stat->stat[s1 + stat->size * s2]);fflush(stdout);
 			}
 			actual[1] += par->step;
 		}
